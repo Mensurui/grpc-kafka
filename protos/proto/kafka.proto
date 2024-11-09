@@ -5,6 +5,8 @@ option go_package = "github.com/Mensurui/grpc-kafka/protos/proto";
 service KafkaService{
   rpc HealthCheck(HealthCheckRequest)
   returns (HealthCheckResponse);
+  rpc Order(OrderRequest)
+  returns (OrderResponse);
 }
 
 message HealthCheckRequest{}
@@ -12,4 +14,14 @@ message HealthCheckRequest{}
 message HealthCheckResponse{
   string message = 1;
   bool status = 2;
+}
+
+message OrderRequest{
+  string id = 1;
+  string itemName = 2;
+}
+
+message OrderResponse{
+  string message = 1;
+  bool success = 2;
 }

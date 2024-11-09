@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	KafkaService_HealthCheck_FullMethodName = "/KafkaService/HealthCheck"
+	KafkaService_Order_FullMethodName       = "/KafkaService/Order"
 )
 
 // KafkaServiceClient is the client API for KafkaService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KafkaServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+	Order(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*OrderResponse, error)
 }
 
 type kafkaServiceClient struct {
@@ -47,11 +49,22 @@ func (c *kafkaServiceClient) HealthCheck(ctx context.Context, in *HealthCheckReq
 	return out, nil
 }
 
+func (c *kafkaServiceClient) Order(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*OrderResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OrderResponse)
+	err := c.cc.Invoke(ctx, KafkaService_Order_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KafkaServiceServer is the server API for KafkaService service.
 // All implementations must embed UnimplementedKafkaServiceServer
 // for forward compatibility.
 type KafkaServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
+	Order(context.Context, *OrderRequest) (*OrderResponse, error)
 	mustEmbedUnimplementedKafkaServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedKafkaServiceServer struct{}
 
 func (UnimplementedKafkaServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
+func (UnimplementedKafkaServiceServer) Order(context.Context, *OrderRequest) (*OrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Order not implemented")
 }
 func (UnimplementedKafkaServiceServer) mustEmbedUnimplementedKafkaServiceServer() {}
 func (UnimplementedKafkaServiceServer) testEmbeddedByValue()                      {}
@@ -104,6 +120,24 @@ func _KafkaService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KafkaService_Order_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KafkaServiceServer).Order(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KafkaService_Order_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KafkaServiceServer).Order(ctx, req.(*OrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // KafkaService_ServiceDesc is the grpc.ServiceDesc for KafkaService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var KafkaService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HealthCheck",
 			Handler:    _KafkaService_HealthCheck_Handler,
+		},
+		{
+			MethodName: "Order",
+			Handler:    _KafkaService_Order_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
