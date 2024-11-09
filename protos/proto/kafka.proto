@@ -1,0 +1,15 @@
+syntax="proto3";
+
+option go_package = "github.com/Mensurui/grpc-kafka/protos/proto";
+
+service KafkaService{
+  rpc HealthCheck(HealthCheckRequest)
+  returns (HealthCheckResponse);
+}
+
+message HealthCheckRequest{}
+
+message HealthCheckResponse{
+  string message = 1;
+  bool status = 2;
+}
